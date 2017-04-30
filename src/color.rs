@@ -51,7 +51,7 @@ impl Color {
     }
 }
 
-impl Mul<f64> for Color {
+impl<'b> Mul<f64> for &'b Color {
     type Output = Color;
     fn mul(self, a: f64) -> Color {
         Color {
@@ -62,9 +62,9 @@ impl Mul<f64> for Color {
     }
 }
 
-impl Mul<Color> for f64 {
+impl<'a> Mul<&'a Color> for f64 {
     type Output = Color;
-    fn mul(self, c: Color) -> Color {
+    fn mul(self, c: &'a Color) -> Color {
         Color {
             r: self * c.r,
             g: self * c.g,
@@ -73,9 +73,9 @@ impl Mul<Color> for f64 {
     }
 }
 
-impl Add<Color> for Color {
+impl<'a, 'b> Add<&'a Color> for &'b Color {
     type Output = Color;
-    fn add(self, c: Color) -> Color {
+    fn add(self, c: &'a Color) -> Color {
         Color {
             r: self.r + c.r,
             g: self.g + c.g,
@@ -84,9 +84,9 @@ impl Add<Color> for Color {
     }
 }
 
-impl Sub<Color> for Color {
+impl<'a, 'b> Sub<&'a Color> for &'b Color {
     type Output = Color;
-    fn sub(self, c: Color) -> Color {
+    fn sub(self, c: &'a Color) -> Color {
         Color {
             r: self.r - c.r,
             g: self.g - c.g,
@@ -97,18 +97,18 @@ impl Sub<Color> for Color {
 
 #[test]
 fn scalar_mul() {
-    assert_eq!(Color::new(0.5, 0.5, 0.5) * 2.0, Color::new(1.0, 1.0, 1.0));
-    assert_eq!(2.0 * Color::new(0.5, 0.5, 0.5), Color::new(1.0, 1.0, 1.0));
+    assert_eq!(&Color::new(0.5, 0.5, 0.5) * 2.0, Color::new(1.0, 1.0, 1.0));
+    assert_eq!(2.0 * &Color::new(0.5, 0.5, 0.5), Color::new(1.0, 1.0, 1.0));
 }
 #[test]
 fn add() {
     assert_eq!(Color::new(1.0, 2.0, 4.0),
-               Color::new(0.5, 1.0, 1.0) + Color::new(0.5, 1.0, 3.0));
+               &Color::new(0.5, 1.0, 1.0) + &Color::new(0.5, 1.0, 3.0));
 }
 #[test]
 fn sub() {
     assert_eq!(Color::new(1.0, 2.0, 0.0),
-               Color::new(1.5, 3.0, 3.0) - Color::new(0.5, 1.0, 3.0));
+               &Color::new(1.5, 3.0, 3.0) - &Color::new(0.5, 1.0, 3.0));
 }
 #[test]
 fn clamp() {

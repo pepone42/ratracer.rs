@@ -24,11 +24,11 @@ impl Vector3 {
         } else {
             1.0 / len
         };
-        self.clone() * div
+        self * div
     }
 }
 
-impl Mul<f64> for Vector3 {
+impl<'b> Mul<f64> for &'b Vector3 {
     type Output = Vector3;
 
     fn mul(self, a: f64) -> Vector3 {
@@ -40,9 +40,9 @@ impl Mul<f64> for Vector3 {
     }
 }
 
-impl Mul<Vector3> for f64 {
+impl<'a> Mul<&'a Vector3> for f64 {
     type Output = Vector3;
-    fn mul(self, v: Vector3) -> Vector3 {
+    fn mul(self, v: &'a Vector3) -> Vector3 {
         Vector3 {
             x: self * v.x,
             y: self * v.y,
@@ -51,10 +51,10 @@ impl Mul<Vector3> for f64 {
     }
 }
 // Cross product
-impl Mul<Vector3> for Vector3 {
+impl<'a, 'b> Mul<&'a Vector3> for &'b Vector3 {
     type Output = Vector3;
 
-    fn mul(self, v: Vector3) -> Vector3 {
+    fn mul(self, v: &'a Vector3) -> Vector3 {
         Vector3 {
             x: self.y * v.z - self.z * v.y,
             y: self.z * v.x - self.x * v.z,
@@ -63,9 +63,9 @@ impl Mul<Vector3> for Vector3 {
     }
 }
 
-impl Add<Vector3> for Vector3 {
+impl<'a, 'b> Add<&'a Vector3> for &'b Vector3 {
     type Output = Vector3;
-    fn add(self, v: Vector3) -> Vector3 {
+    fn add(self, v: &'a Vector3) -> Vector3 {
         Vector3 {
             x: self.x + v.x,
             y: self.y + v.y,
@@ -74,9 +74,9 @@ impl Add<Vector3> for Vector3 {
     }
 }
 
-impl Sub<Vector3> for Vector3 {
+impl<'a, 'b> Sub<&'a Vector3> for &'b Vector3 {
     type Output = Vector3;
-    fn sub(self, v: Vector3) -> Vector3 {
+    fn sub(self, v: &'a Vector3) -> Vector3 {
         Vector3 {
             x: self.x - v.x,
             y: self.y - v.y,
@@ -85,9 +85,9 @@ impl Sub<Vector3> for Vector3 {
     }
 }
 
-impl BitXor<Vector3> for Vector3 {
+impl<'a, 'b> BitXor<&'a Vector3> for &'b Vector3 {
     type Output = f64;
-    fn bitxor(self, v: Vector3) -> f64 {
+    fn bitxor(self, v: &'a Vector3) -> f64 {
         self.x * v.x + self.y * v.y + self.z * v.z
     }
 }
@@ -95,32 +95,32 @@ impl BitXor<Vector3> for Vector3 {
 #[test]
 fn scalar_mul_vector() {
     assert_eq!(Vector3::new(2.0, 4.0, 6.0),
-               2.0 * Vector3::new(1.0, 2.0, 3.0));
+               2.0 * &Vector3::new(1.0, 2.0, 3.0));
 }
 #[test]
 fn vector_mul_scalar() {
     assert_eq!(Vector3::new(2.0, 4.0, 6.0),
-               Vector3::new(1.0, 2.0, 3.0) * 2.0);
+               &Vector3::new(1.0, 2.0, 3.0) * 2.0);
 }
 #[test]
 fn cross() {
     assert_eq!(Vector3::new(-4.0, 8.0, -4.0),
-               Vector3::new(1.0, 2.0, 3.0) * Vector3::new(3.0, 2.0, 1.0));
+               &Vector3::new(1.0, 2.0, 3.0) * &Vector3::new(3.0, 2.0, 1.0));
 }
 #[test]
 fn add() {
     assert_eq!(Vector3::new(4.0, 4.0, 4.0),
-               Vector3::new(1.0, 2.0, 3.0) + Vector3::new(3.0, 2.0, 1.0));
+               &Vector3::new(1.0, 2.0, 3.0) + &Vector3::new(3.0, 2.0, 1.0));
 }
 #[test]
 fn sub() {
     assert_eq!(Vector3::new(-2.0, 0.0, 2.0),
-               Vector3::new(1.0, 2.0, 3.0) - Vector3::new(3.0, 2.0, 1.0));
+               &Vector3::new(1.0, 2.0, 3.0) - &Vector3::new(3.0, 2.0, 1.0));
 }
 #[test]
 fn dot() {
     assert_eq!(10.0,
-               Vector3::new(1.0, 2.0, 3.0) ^ Vector3::new(3.0, 2.0, 1.0));
+               &Vector3::new(1.0, 2.0, 3.0) ^ &Vector3::new(3.0, 2.0, 1.0));
 }
 #[test]
 fn len() {
