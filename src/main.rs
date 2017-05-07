@@ -1,8 +1,5 @@
 extern crate minifb;
 
-
-use minifb::{Key, WindowOptions, Window};
-
 mod vector3;
 mod color;
 mod camera;
@@ -15,6 +12,8 @@ mod intersection;
 mod light;
 mod scene;
 mod raytracer;
+
+use minifb::{Key, WindowOptions, Window};
 
 use vector3::Vector3;
 use color::Color;
@@ -29,33 +28,22 @@ use raytracer::Raytracer;
 const WIDTH: usize = 1024;
 const HEIGHT: usize = 1024;
 
+const CHECKBOARD: &CheckBoard = &CheckBoard {};
+const SHINY: &Shiny = &Shiny {};
 
 fn main() {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
-    let cb: CheckBoard = CheckBoard {};
-    let sy: Shiny = Shiny {};
-    let plane: Plane = Plane::new(Vector3::new(0.0, 1.0, 0.0), 0.0, &cb);
-    let sphere1: Sphere = Sphere::new(Vector3::new(0.0, 1.0, -0.25), 1.0, &sy);
-    let sphere2: Sphere = Sphere::new(Vector3::new(-1.0, 0.5, 1.5), 0.5, &cb);
+
+    let plane: Plane = Plane::new(Vector3::new(0.0, 1.0, 0.0), 0.0, CHECKBOARD);
+    let sphere1: Sphere = Sphere::new(Vector3::new(0.0, 1.0, -0.25), 1.0, SHINY);
+    let sphere2: Sphere = Sphere::new(Vector3::new(-1.0, 0.5, 1.5), 0.5, SHINY);
 
     let s = Scene {
         objects: vec![&plane, &sphere1, &sphere2],
-        lights: vec![Light {
-                         pos: Vector3::new(-2.0, 2.5, 0.0),
-                         color: Color::new(0.49, 0.07, 0.07),
-                     },
-                     Light {
-                         pos: Vector3::new(1.5, 2.5, 1.5),
-                         color: Color::new(0.07, 0.07, 0.49),
-                     },
-                     Light {
-                         pos: Vector3::new(1.5, 2.5, -1.5),
-                         color: Color::new(0.07, 0.49, 0.071),
-                     },
-                     Light {
-                         pos: Vector3::new(0.0, 3.5, 0.0),
-                         color: Color::new(0.21, 0.21, 0.35),
-                     }],
+        lights: vec![Light::new(Vector3::new(-2.0, 2.5, 0.0), Color::new(0.49, 0.07, 0.07)),
+                     Light::new(Vector3::new(1.5, 2.5, 1.5), Color::new(0.07, 0.07, 0.49)),
+                     Light::new(Vector3::new(1.5, 2.5, -1.5), Color::new(0.07, 0.49, 0.071)),
+                     Light::new(Vector3::new(0.0, 3.5, 0.0), Color::new(0.21, 0.21, 0.35))],
         camera: Camera::new(Vector3::new(3.0, 2.0, 4.0), Vector3::new(-1.0, 0.5, 0.0)),
     };
 
