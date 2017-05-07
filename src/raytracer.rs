@@ -4,10 +4,9 @@ use object::{Object, Ray, Intersection};
 use color::Color;
 use vector3::Vector3;
 use light::Light;
-use std::iter;
 use camera::Camera;
 
-const max_depth: f64 = 5.0;
+const MAX_DEPTH: f64 = 5.0;
 
 pub struct Raytracer<'a> {
     pub scene: Scene<'a>,
@@ -36,7 +35,7 @@ impl<'a> Raytracer<'a> {
         closes_inter
     }
 
-    fn testRay(&self, ray: &Ray) -> Option<f64> {
+    fn test_ray(&self, ray: &Ray) -> Option<f64> {
         if let Some(isect) = self.intersection(ray) {
             Some(isect.dist)
         } else {
@@ -44,35 +43,36 @@ impl<'a> Raytracer<'a> {
         }
     }
 
-    fn getReflectionColor(&self,
+    fn get_reflection_color(&self,
                           obj: &Object,
                           pos: &Vector3,
                           normal: &Vector3,
-                          reflectDir: &Vector3,
+                          reflect_dir: &Vector3,
                           depth: f64)
                           -> Color {
         //return Color::new(0.1,0.2,0.1);
         obj.surface().reflect(&pos) *
-        &self.traceRay(&Ray {
+        &self.trace_ray(&Ray {
                             start: pos.clone(),
-                            dir: reflectDir.clone(),
+                            dir: reflect_dir.clone(),
                         },
                        depth + 1.0)
     }
 
-    fn getNaturalColor(&self, obj: &Object, pos: &Vector3, norm: &Vector3, rd: &Vector3) -> Color {
-        let addLigh = |col: Color, light: &Light| {
+    fn get_natural_color(&self, obj: &Object, pos: &Vector3, norm: &Vector3, rd: &Vector3) -> Color {
+        let add_ligh = |col: Color, light: &Light| {
             let ldis = &light.pos - &pos;
             let livec = ldis.norm();
-            let neatIsect = self.testRay(&Ray {
+            let neat_isect = self.test_ray
+    (&Ray {
                                               start: pos.clone(),
                                               dir: livec.clone(),
                                           });
-            let isInShadow = match neatIsect {
+            let is_in_shadow = match neat_isect {
                 None => false,
                 Some(i) => i <= ldis.len(),
             };
-            if isInShadow {
+            if is_in_shadow {
                 col
             } else {
                 let illum = &livec ^ norm;
@@ -96,24 +96,24 @@ impl<'a> Raytracer<'a> {
         self.scene
             .lights
             .iter()
-            .fold(Color::black(), |acc, l| addLigh(acc, &l))
+            .fold(Color::black(), |acc, l| add_ligh(acc, &l))
     }
 
     fn shade(&self, isect: &Intersection, depth: f64) -> Color {
         let d = &isect.ray.dir;
         let pos = &(isect.dist * d) + &isect.ray.start;
         let normal = isect.object.normal(&pos);
-        let reflectDir = d - &(&((&normal ^ d) * &normal) * 2.0);
-        let naturalColor = &Color::black() +
-                           &self.getNaturalColor(isect.object, &pos, &normal, &reflectDir);
-        let reflectedColor = if depth >= max_depth {
+        let reflect_dir = d - &(&((&normal ^ d) * &normal) * 2.0);
+        let natural_color = &Color::black() +
+                           &self.get_natural_color(isect.object, &pos, &normal, &reflect_dir);
+        let reflected_color = if depth >= MAX_DEPTH {
             Color::grey()
         } else {
-            self.getReflectionColor(isect.object, &pos, &normal, &reflectDir, depth)
+            self.get_reflection_color(isect.object, &pos, &normal, &reflect_dir, depth)
         };
-        &naturalColor + &reflectedColor
+        &natural_color + &reflected_color
     }
-    fn traceRay(&self, ray: &Ray, depth: f64) -> Color {
+    fn trace_ray(&self, ray: &Ray, depth: f64) -> Color {
         if let Some(isect) = self.intersection(ray) {
             self.shade(&isect, depth)
         } else {
@@ -123,19 +123,19 @@ impl<'a> Raytracer<'a> {
 
     pub fn render(&self, buffer: &mut Vec<u32>, width: u32, height: u32) {
 
-        let getPoint = |x: f64, y: f64, cam: &Camera| {
+        let get_point = |x: f64, y: f64, cam: &Camera| {
             let width = width as f64;
             let height = height as f64;
-            let recenterX = |x| (x - (width / 2.0)) / 2.0 / width;
-            let recenterY = |y| (y - (height / 2.0)) / 2.0 / height;
-            (&(&(&cam.right * recenterX(x)) + &(&cam.up * recenterY(y))) + &cam.forward).norm()
+            let recenter_x = |x| (x - (width / 2.0)) / 2.0 / width;
+            let recenter_y = |y| (y - (height / 2.0)) / 2.0 / height;
+            (&(&(&cam.right * recenter_x(x)) + &(&cam.up * recenter_y(y))) + &cam.forward).norm()
         };
         for y in 0..height {
             for x in 0..width {
                 let color =
-                    self.traceRay(&Ray {
+                    self.trace_ray(&Ray {
                                        start: self.scene.camera.pos.clone(),
-                                       dir: getPoint(x as f64, y as f64, &self.scene.camera),
+                                       dir: get_point(x as f64, y as f64, &self.scene.camera),
                                    },
                                   0.0);
                 let c = color.to_pixel_color();

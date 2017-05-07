@@ -3,9 +3,7 @@ use vector3::Vector3;
 use surface::Surface;
 use object::{Object, Ray, Intersection};
 
-//#[derive(Debug)]
 pub struct Plane<'a> {
-//    object: Object,
     norm: Vector3,
     offset: f64,
     surface: &'a Surface,
