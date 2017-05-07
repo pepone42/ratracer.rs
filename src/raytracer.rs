@@ -44,30 +44,34 @@ impl<'a> Raytracer<'a> {
     }
 
     fn get_reflection_color(&self,
-                          obj: &Object,
-                          pos: &Vector3,
-                          normal: &Vector3,
-                          reflect_dir: &Vector3,
-                          depth: f64)
-                          -> Color {
+                            obj: &Object,
+                            pos: &Vector3,
+                            normal: &Vector3,
+                            reflect_dir: &Vector3,
+                            depth: f64)
+                            -> Color {
         //return Color::new(0.1,0.2,0.1);
         obj.surface().reflect(&pos) *
         &self.trace_ray(&Ray {
-                            start: pos.clone(),
-                            dir: reflect_dir.clone(),
-                        },
-                       depth + 1.0)
+                             start: pos.clone(),
+                             dir: reflect_dir.clone(),
+                         },
+                        depth + 1.0)
     }
 
-    fn get_natural_color(&self, obj: &Object, pos: &Vector3, norm: &Vector3, rd: &Vector3) -> Color {
+    fn get_natural_color(&self,
+                         obj: &Object,
+                         pos: &Vector3,
+                         norm: &Vector3,
+                         rd: &Vector3)
+                         -> Color {
         let add_ligh = |col: Color, light: &Light| {
             let ldis = &light.pos - &pos;
             let livec = ldis.norm();
-            let neat_isect = self.test_ray
-    (&Ray {
-                                              start: pos.clone(),
-                                              dir: livec.clone(),
-                                          });
+            let neat_isect = self.test_ray(&Ray {
+                                                start: pos.clone(),
+                                                dir: livec.clone(),
+                                            });
             let is_in_shadow = match neat_isect {
                 None => false,
                 Some(i) => i <= ldis.len(),
@@ -105,7 +109,7 @@ impl<'a> Raytracer<'a> {
         let normal = isect.object.normal(&pos);
         let reflect_dir = d - &(&((&normal ^ d) * &normal) * 2.0);
         let natural_color = &Color::black() +
-                           &self.get_natural_color(isect.object, &pos, &normal, &reflect_dir);
+                            &self.get_natural_color(isect.object, &pos, &normal, &reflect_dir);
         let reflected_color = if depth >= MAX_DEPTH {
             Color::grey()
         } else {
@@ -134,10 +138,10 @@ impl<'a> Raytracer<'a> {
             for x in 0..width {
                 let color =
                     self.trace_ray(&Ray {
-                                       start: self.scene.camera.pos.clone(),
-                                       dir: get_point(x as f64, y as f64, &self.scene.camera),
-                                   },
-                                  0.0);
+                                        start: self.scene.camera.pos.clone(),
+                                        dir: get_point(x as f64, y as f64, &self.scene.camera),
+                                    },
+                                   0.0);
                 let c = color.to_pixel_color();
                 buffer[(x + (height - y - 1) * width) as usize] =
                     (c.r as u32) << 16 | (c.g as u32) << 8 | (c.b as u32);
@@ -145,4 +149,3 @@ impl<'a> Raytracer<'a> {
         }
     }
 }
-

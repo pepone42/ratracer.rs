@@ -10,8 +10,12 @@ pub struct Plane<'a> {
 }
 
 impl<'a> Plane<'a> {
-    pub fn new(norm: Vector3,offset : f64,surface: &'a Surface) -> Self {
-        Plane{norm,offset,surface}
+    pub fn new(norm: Vector3, offset: f64, surface: &'a Surface) -> Self {
+        Plane {
+            norm,
+            offset,
+            surface,
+        }
     }
 }
 
@@ -21,11 +25,15 @@ impl<'a> Object for Plane<'a> {
     }
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
         let denom = &self.norm ^ &ray.dir;
-        if denom>0.0  {
+        if denom > 0.0 {
             None
         } else {
             let dist = ((&self.norm ^ &ray.start) + self.offset) / (-denom);
-            Some(Intersection{object: self,ray: (*ray).clone(),dist})
+            Some(Intersection {
+                     object: self,
+                     ray: (*ray).clone(),
+                     dist,
+                 })
         }
     }
     fn surface(&self) -> &Surface {

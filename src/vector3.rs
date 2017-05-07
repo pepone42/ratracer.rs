@@ -19,11 +19,7 @@ impl Vector3 {
 
     pub fn norm(&self) -> Vector3 {
         let len = self.len();
-        let div = if len == 0.0 {
-            f64::INFINITY
-        } else {
-            1.0 / len
-        };
+        let div = if len == 0.0 { f64::INFINITY } else { 1.0 / len };
         self * div
     }
 }
@@ -124,11 +120,14 @@ fn dot() {
 }
 #[test]
 fn len() {
-    assert_eq!((14f64).sqrt(),Vector3::new(1.0, 2.0, 3.0).len());
+    assert_eq!((14f64).sqrt(), Vector3::new(1.0, 2.0, 3.0).len());
 }
 #[test]
 fn norm() {
-    assert_eq!(Vector3::new(2.0,0.0,0.0).norm(), Vector3::new(1.0,0.0,0.0));
-    assert_eq!(Vector3::new(0.0,30.0,0.0).norm(), Vector3::new(0.0,1.0,0.0));
-    assert_eq!(Vector3::new(0.0,0.0,64.0).norm(), Vector3::new(0.0,0.0,1.0));
+    assert_eq!(Vector3::new(2.0, 0.0, 0.0).norm(),
+               Vector3::new(1.0, 0.0, 0.0));
+    assert_eq!(Vector3::new(0.0, 30.0, 0.0).norm(),
+               Vector3::new(0.0, 1.0, 0.0));
+    assert_eq!(Vector3::new(0.0, 0.0, 64.0).norm(),
+               Vector3::new(0.0, 0.0, 1.0));
 }
