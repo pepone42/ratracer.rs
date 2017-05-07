@@ -84,6 +84,18 @@ impl<'a, 'b> Add<&'a Color> for &'b Color {
     }
 }
 
+
+impl<'a, 'b> Mul<&'a Color> for &'b Color {
+    type Output = Color;
+    fn mul(self, c: &'a Color) -> Color {
+        Color {
+            r: self.r * c.r,
+            g: self.g * c.g,
+            b: self.b * c.b,
+        }
+    }
+}
+
 impl<'a, 'b> Sub<&'a Color> for &'b Color {
     type Output = Color;
     fn sub(self, c: &'a Color) -> Color {
