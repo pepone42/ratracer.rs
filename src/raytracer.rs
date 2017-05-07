@@ -125,11 +125,11 @@ impl<'a> Raytracer<'a> {
         }
     }
 
-    pub fn render(&self, buffer: &mut Vec<u32>, width: u32, height: u32) {
+    pub fn render(&self, buffer: &mut Vec<u32>, width: u32, height: u32, oversampling: u32) {
 
         let get_point = |x: f64, y: f64, cam: &Camera| {
-            let width = width as f64;
-            let height = height as f64;
+            let width = (width * oversampling) as f64;
+            let height = (height * oversampling) as f64;
             let recenter_x = |x| (x - (width / 2.0)) / 2.0 / width;
             let recenter_y = |y| (y - (height / 2.0)) / 2.0 / height;
             (&(&(&cam.right * recenter_x(x)) + &(&cam.up * recenter_y(y))) + &cam.forward).norm()
@@ -137,11 +137,19 @@ impl<'a> Raytracer<'a> {
         for y in 0..height {
             for x in 0..width {
                 let color =
-                    self.trace_ray(&Ray {
-                                        start: self.scene.camera.pos.clone(),
-                                        dir: get_point(x as f64, y as f64, &self.scene.camera),
-                                    },
-                                   0.0);
+                {
+                    let mut color = Color::black();
+                    for xx in 0..oversampling {
+                        for yy in 0..oversampling {
+                            color = &color + &self.trace_ray(&Ray {
+                                start: self.scene.camera.pos.clone(),
+                                dir: get_point((x*oversampling + xx) as f64, (y*oversampling + yy) as f64, &self.scene.camera),
+                            },
+                            0.0)
+                        }
+                    }
+                    &color * (1.0/((oversampling*oversampling) as f64))
+                };
                 let c = color.to_pixel_color();
                 buffer[(x + (height - y - 1) * width) as usize] =
                     (c.r as u32) << 16 | (c.g as u32) << 8 | (c.b as u32);

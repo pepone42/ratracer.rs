@@ -25,8 +25,8 @@ use light::Light;
 use camera::Camera;
 use raytracer::Raytracer;
 
-const WIDTH: usize = 1024;
-const HEIGHT: usize = 1024;
+const WIDTH: usize = 512;
+const HEIGHT: usize = 512;
 
 const CHECKBOARD: &CheckBoard = &CheckBoard {};
 const SHINY: &Shiny = &Shiny {};
@@ -57,7 +57,7 @@ fn main() {
 
     let rt = Raytracer::new(s);
 
-    rt.render(&mut buffer, WIDTH as u32, HEIGHT as u32);
+    rt.render(&mut buffer, WIDTH as u32, HEIGHT as u32, 4);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
 
