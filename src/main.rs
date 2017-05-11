@@ -56,7 +56,7 @@ fn main() {
                             });
 
     let rt = Raytracer::new(s);
-
+    
     rt.render(&mut buffer, WIDTH as u32, HEIGHT as u32, 4);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {

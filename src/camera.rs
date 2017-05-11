@@ -12,9 +12,9 @@ pub struct Camera {
 impl Camera {
     pub fn new(pos: Vector3, look_at: Vector3) -> Self {
         let down = Vector3::new(0.0, -1.0, 0.0);
-        let forward = (&look_at - &pos).norm();
-        let right = &(&forward * &down).norm() * 1.5;
-        let up = &(&forward * &right).norm() * 1.5;
+        let forward = (look_at - pos).norm();
+        let right = (forward * down).norm() * 1.5;
+        let up = (forward * right).norm() * 1.5;
         Camera {
             look_at,
             pos,

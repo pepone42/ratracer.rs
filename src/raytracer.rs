@@ -45,14 +45,13 @@ impl<'a> Raytracer<'a> {
 
     fn get_reflection_color(&self,
                             obj: &Object,
-                            pos: &Vector3,
-                            normal: &Vector3,
-                            reflect_dir: &Vector3,
+                            pos: Vector3,
+                            normal: Vector3,
+                            reflect_dir: Vector3,
                             depth: f64)
                             -> Color {
-        //return Color::new(0.1,0.2,0.1);
-        obj.surface().reflect(&pos) *
-        &self.trace_ray(&Ray {
+        obj.surface().reflect(pos) *
+        self.trace_ray(&Ray {
                              start: pos.clone(),
                              dir: reflect_dir.clone(),
                          },
@@ -61,16 +60,16 @@ impl<'a> Raytracer<'a> {
 
     fn get_natural_color(&self,
                          obj: &Object,
-                         pos: &Vector3,
-                         norm: &Vector3,
-                         rd: &Vector3)
+                         pos: Vector3,
+                         norm: Vector3,
+                         rd: Vector3)
                          -> Color {
         let add_ligh = |col: Color, light: &Light| {
-            let ldis = &light.pos - &pos;
+            let ldis = light.pos - pos;
             let livec = ldis.norm();
             let neat_isect = self.test_ray(&Ray {
-                                                start: pos.clone(),
-                                                dir: livec.clone(),
+                                                start: pos,
+                                                dir: livec,
                                             });
             let is_in_shadow = match neat_isect {
                 None => false,
@@ -79,22 +78,21 @@ impl<'a> Raytracer<'a> {
             if is_in_shadow {
                 col
             } else {
-                let illum = &livec ^ norm;
+                let illum = livec ^ norm;
                 let lcolor = if illum > 0.0 {
-                    illum * &light.color
+                    illum * light.color
                 } else {
                     Color::black()
                 };
-                let specular = &livec ^ &rd.norm();
+                let specular = livec ^ rd.norm();
                 let scolor = if specular > 0.0 {
-                    specular.powf(obj.surface().roughness()) * &light.color
-                    //(obj.surface().roughness().powf(specular)) * &light.color
+                    specular.powf(obj.surface().roughness()) * light.color
                 } else {
                     Color::black()
                 };
-                &col +
-                &(&(&obj.surface().diffuse(&pos) * &lcolor) +
-                  &(&obj.surface().specular(&pos) * &scolor))
+                col +
+                ((obj.surface().diffuse(pos) * lcolor) +
+                  (obj.surface().specular(pos) * scolor))
             }
         };
         self.scene
@@ -104,18 +102,18 @@ impl<'a> Raytracer<'a> {
     }
 
     fn shade(&self, isect: &Intersection, depth: f64) -> Color {
-        let d = &isect.ray.dir;
-        let pos = &(isect.dist * d) + &isect.ray.start;
-        let normal = isect.object.normal(&pos);
-        let reflect_dir = d - &(&((&normal ^ d) * &normal) * 2.0);
-        let natural_color = &Color::black() +
-                            &self.get_natural_color(isect.object, &pos, &normal, &reflect_dir);
+        let d = isect.ray.dir;
+        let pos = (isect.dist * d) + isect.ray.start;
+        let normal = isect.object.normal(pos);
+        let reflect_dir = d - (((normal ^ d) * normal) * 2.0);
+        let natural_color = Color::black() +
+                            self.get_natural_color(isect.object, pos, normal, reflect_dir);
         let reflected_color = if depth >= MAX_DEPTH {
             Color::grey()
         } else {
-            self.get_reflection_color(isect.object, &pos, &normal, &reflect_dir, depth)
+            self.get_reflection_color(isect.object, pos, normal, reflect_dir, depth)
         };
-        &natural_color + &reflected_color
+        natural_color + reflected_color
     }
     fn trace_ray(&self, ray: &Ray, depth: f64) -> Color {
         if let Some(isect) = self.intersection(ray) {
@@ -132,23 +130,26 @@ impl<'a> Raytracer<'a> {
             let height = (height * oversampling) as f64;
             let recenter_x = |x| (x - (width / 2.0)) / 2.0 / width;
             let recenter_y = |y| (y - (height / 2.0)) / 2.0 / height;
-            (&(&(&cam.right * recenter_x(x)) + &(&cam.up * recenter_y(y))) + &cam.forward).norm()
+            (((cam.right * recenter_x(x)) + (cam.up * recenter_y(y))) + cam.forward).norm()
         };
         for y in 0..height {
             for x in 0..width {
-                let color =
-                {
+                let color = {
                     let mut color = Color::black();
                     for xx in 0..oversampling {
                         for yy in 0..oversampling {
-                            color = &color + &self.trace_ray(&Ray {
-                                start: self.scene.camera.pos.clone(),
-                                dir: get_point((x*oversampling + xx) as f64, (y*oversampling + yy) as f64, &self.scene.camera),
-                            },
-                            0.0)
+                            color =
+                                color +
+                                self.trace_ray(&Ray {
+                                                     start: self.scene.camera.pos.clone(),
+                                                     dir: get_point((x * oversampling + xx) as f64,
+                                                                    (y * oversampling + yy) as f64,
+                                                                    &self.scene.camera),
+                                                 },
+                                                0.0)
                         }
                     }
-                    &color * (1.0/((oversampling*oversampling) as f64))
+                    color * (1.0 / ((oversampling * oversampling) as f64))
                 };
                 let c = color.to_pixel_color();
                 buffer[(x + (height - y - 1) * width) as usize] =
@@ -157,3 +158,4 @@ impl<'a> Raytracer<'a> {
         }
     }
 }
+

@@ -20,15 +20,15 @@ impl<'a> Plane<'a> {
 }
 
 impl<'a> Object for Plane<'a> {
-    fn normal(&self, pos: &Vector3) -> Vector3 {
+    fn normal(&self, pos: Vector3) -> Vector3 {
         self.norm.clone()
     }
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
-        let denom = &self.norm ^ &ray.dir;
+        let denom = self.norm ^ ray.dir;
         if denom > 0.0 {
             None
         } else {
-            let dist = ((&self.norm ^ &ray.start) + self.offset) / (-denom);
+            let dist = ((self.norm ^ ray.start) + self.offset) / (-denom);
             Some(Intersection {
                      object: self,
                      ray: (*ray).clone(),

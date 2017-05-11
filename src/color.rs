@@ -1,7 +1,7 @@
 use std::f64;
 use std::ops::{Mul, Add, Sub};
 
-#[derive(Debug,Clone,PartialEq)]
+#[derive(Debug,Clone,PartialEq,Copy)]
 pub struct Color {
     pub r: f64,
     pub g: f64,
@@ -33,7 +33,9 @@ impl Color {
             b: 0.0,
         }
     }
-    pub fn clamp(&self) -> Color {
+
+    /// Clamp the r g and b componant to max 1.0
+    pub fn clamp(self) -> Color {
         let cl = |a| if a > 1.0 { 1.0 } else { a };
         Color {
             r: cl(self.r),
@@ -41,7 +43,7 @@ impl Color {
             b: cl(self.b),
         }
     }
-    pub fn to_pixel_color(&self) -> Color {
+    pub fn to_pixel_color(self) -> Color {
         let c = self.clamp();
         Color {
             r: (c.r * 255.0).floor(),
@@ -51,7 +53,7 @@ impl Color {
     }
 }
 
-impl<'b> Mul<f64> for &'b Color {
+impl Mul<f64> for Color {
     type Output = Color;
     fn mul(self, a: f64) -> Color {
         Color {
@@ -62,9 +64,9 @@ impl<'b> Mul<f64> for &'b Color {
     }
 }
 
-impl<'a> Mul<&'a Color> for f64 {
+impl Mul<Color> for f64 {
     type Output = Color;
-    fn mul(self, c: &'a Color) -> Color {
+    fn mul(self, c: Color) -> Color {
         Color {
             r: self * c.r,
             g: self * c.g,
@@ -73,9 +75,9 @@ impl<'a> Mul<&'a Color> for f64 {
     }
 }
 
-impl<'a, 'b> Add<&'a Color> for &'b Color {
+impl Add<Color> for Color {
     type Output = Color;
-    fn add(self, c: &'a Color) -> Color {
+    fn add(self, c: Color) -> Color {
         Color {
             r: self.r + c.r,
             g: self.g + c.g,
@@ -85,9 +87,9 @@ impl<'a, 'b> Add<&'a Color> for &'b Color {
 }
 
 
-impl<'a, 'b> Mul<&'a Color> for &'b Color {
+impl Mul<Color> for Color {
     type Output = Color;
-    fn mul(self, c: &'a Color) -> Color {
+    fn mul(self, c: Color) -> Color {
         Color {
             r: self.r * c.r,
             g: self.g * c.g,
@@ -96,9 +98,9 @@ impl<'a, 'b> Mul<&'a Color> for &'b Color {
     }
 }
 
-impl<'a, 'b> Sub<&'a Color> for &'b Color {
+impl Sub<Color> for Color {
     type Output = Color;
-    fn sub(self, c: &'a Color) -> Color {
+    fn sub(self, c: Color) -> Color {
         Color {
             r: self.r - c.r,
             g: self.g - c.g,
@@ -109,18 +111,18 @@ impl<'a, 'b> Sub<&'a Color> for &'b Color {
 
 #[test]
 fn scalar_mul() {
-    assert_eq!(&Color::new(0.5, 0.5, 0.5) * 2.0, Color::new(1.0, 1.0, 1.0));
-    assert_eq!(2.0 * &Color::new(0.5, 0.5, 0.5), Color::new(1.0, 1.0, 1.0));
+    assert_eq!(Color::new(0.5, 0.5, 0.5) * 2.0, Color::new(1.0, 1.0, 1.0));
+    assert_eq!(2.0 * Color::new(0.5, 0.5, 0.5), Color::new(1.0, 1.0, 1.0));
 }
 #[test]
 fn add() {
     assert_eq!(Color::new(1.0, 2.0, 4.0),
-               &Color::new(0.5, 1.0, 1.0) + &Color::new(0.5, 1.0, 3.0));
+               Color::new(0.5, 1.0, 1.0) + Color::new(0.5, 1.0, 3.0));
 }
 #[test]
 fn sub() {
     assert_eq!(Color::new(1.0, 2.0, 0.0),
-               &Color::new(1.5, 3.0, 3.0) - &Color::new(0.5, 1.0, 3.0));
+               Color::new(1.5, 3.0, 3.0) - Color::new(0.5, 1.0, 3.0));
 }
 #[test]
 fn clamp() {

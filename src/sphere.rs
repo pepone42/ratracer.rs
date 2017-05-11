@@ -21,15 +21,15 @@ impl<'a> Sphere<'a> {
 }
 
 impl<'a> Object for Sphere<'a> {
-    fn normal(&self, pos: &Vector3) -> Vector3 {
-        (pos - &self.center).norm()
+    fn normal(&self, pos: Vector3) -> Vector3 {
+        (pos - self.center).norm()
     }
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
-        let eo = &self.center - &ray.start;
-        let v = &eo ^ &ray.dir;
+        let eo = self.center - ray.start;
+        let v = eo ^ ray.dir;
         let mut dist = 0f64;
         if v >= 0.0 {
-            let disc = (self.radius * self.radius) - ((&eo ^ &eo) - (v * v));
+            let disc = (self.radius * self.radius) - ((eo ^ eo) - (v * v));
             if disc >= 0.0 {
                 dist = v - disc.sqrt();
             }
