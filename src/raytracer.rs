@@ -17,11 +17,11 @@ impl<'a> Raytracer<'a> {
         Raytracer { scene }
     }
 
-    fn intersection(&self, ray: &Ray) -> Option<Intersection> {
+    fn intersection(&self, ray: Ray) -> Option<Intersection> {
         let mut closest = f64::INFINITY;
         let mut closes_inter: Option<Intersection> = None;
         for i in &self.scene.objects {
-            if let Some(inter) = i.intersect(&ray) {
+            if let Some(inter) = i.intersect(ray) {
                 if inter.dist < closest {
                     closes_inter = Some(Intersection {
                                             object: inter.object,
@@ -35,7 +35,7 @@ impl<'a> Raytracer<'a> {
         closes_inter
     }
 
-    fn test_ray(&self, ray: &Ray) -> Option<f64> {
+    fn test_ray(&self, ray: Ray) -> Option<f64> {
         if let Some(isect) = self.intersection(ray) {
             Some(isect.dist)
         } else {
@@ -50,27 +50,23 @@ impl<'a> Raytracer<'a> {
                             reflect_dir: Vector3,
                             depth: f64)
                             -> Color {
+        let _ = normal;
         obj.surface().reflect(pos) *
-        self.trace_ray(&Ray {
-                             start: pos.clone(),
-                             dir: reflect_dir.clone(),
-                         },
-                        depth + 1.0)
+        self.trace_ray(Ray {
+                           start: pos.clone(),
+                           dir: reflect_dir.clone(),
+                       },
+                       depth + 1.0)
     }
 
-    fn get_natural_color(&self,
-                         obj: &Object,
-                         pos: Vector3,
-                         norm: Vector3,
-                         rd: Vector3)
-                         -> Color {
+    fn get_natural_color(&self, obj: &Object, pos: Vector3, norm: Vector3, rd: Vector3) -> Color {
         let add_ligh = |col: Color, light: &Light| {
             let ldis = light.pos - pos;
             let livec = ldis.norm();
-            let neat_isect = self.test_ray(&Ray {
-                                                start: pos,
-                                                dir: livec,
-                                            });
+            let neat_isect = self.test_ray(Ray {
+                                               start: pos,
+                                               dir: livec,
+                                           });
             let is_in_shadow = match neat_isect {
                 None => false,
                 Some(i) => i <= ldis.len(),
@@ -91,8 +87,7 @@ impl<'a> Raytracer<'a> {
                     Color::black()
                 };
                 col +
-                ((obj.surface().diffuse(pos) * lcolor) +
-                  (obj.surface().specular(pos) * scolor))
+                ((obj.surface().diffuse(pos) * lcolor) + (obj.surface().specular(pos) * scolor))
             }
         };
         self.scene
@@ -115,7 +110,7 @@ impl<'a> Raytracer<'a> {
         };
         natural_color + reflected_color
     }
-    fn trace_ray(&self, ray: &Ray, depth: f64) -> Color {
+    fn trace_ray(&self, ray: Ray, depth: f64) -> Color {
         if let Some(isect) = self.intersection(ray) {
             self.shade(&isect, depth)
         } else {
@@ -140,13 +135,13 @@ impl<'a> Raytracer<'a> {
                         for yy in 0..oversampling {
                             color =
                                 color +
-                                self.trace_ray(&Ray {
-                                                     start: self.scene.camera.pos.clone(),
-                                                     dir: get_point((x * oversampling + xx) as f64,
-                                                                    (y * oversampling + yy) as f64,
-                                                                    &self.scene.camera),
-                                                 },
-                                                0.0)
+                                self.trace_ray(Ray {
+                                                   start: self.scene.camera.pos.clone(),
+                                                   dir: get_point((x * oversampling + xx) as f64,
+                                                                  (y * oversampling + yy) as f64,
+                                                                  &self.scene.camera),
+                                               },
+                                               0.0)
                         }
                     }
                     color * (1.0 / ((oversampling * oversampling) as f64))

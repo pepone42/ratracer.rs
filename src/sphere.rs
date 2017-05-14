@@ -24,7 +24,7 @@ impl<'a> Object for Sphere<'a> {
     fn normal(&self, pos: Vector3) -> Vector3 {
         (pos - self.center).norm()
     }
-    fn intersect(&self, ray: &Ray) -> Option<Intersection> {
+    fn intersect(&self, ray: Ray) -> Option<Intersection> {
         let eo = self.center - ray.start;
         let v = eo ^ ray.dir;
         let mut dist = 0f64;
@@ -39,8 +39,8 @@ impl<'a> Object for Sphere<'a> {
         } else {
             Some(Intersection {
                      object: self,
-                     ray: (*ray).clone(),
-                     dist: dist,
+                     ray,
+                     dist,
                  })
         }
     }

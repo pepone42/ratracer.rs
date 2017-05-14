@@ -21,12 +21,15 @@ pub trait Surface {
 pub struct Shiny;
 impl Surface for Shiny {
     fn diffuse(&self, pos: Vector3) -> Color {
+        let _ = pos;
         Color::white()
     }
     fn specular(&self, pos: Vector3) -> Color {
+        let _ = pos;
         Color::grey()
     }
     fn reflect(&self, pos: Vector3) -> f64 {
+        let _ = pos;
         0.7
     }
     fn roughness(&self) -> f64 {
@@ -44,6 +47,7 @@ impl Surface for CheckBoard {
         }
     }
     fn specular(&self, pos: Vector3) -> Color {
+        let _ = pos;
         Color::white()
     }
     fn reflect(&self, pos: Vector3) -> f64 {
