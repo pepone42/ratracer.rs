@@ -1,7 +1,7 @@
 use std::f64;
 use std::ops::{Mul, Add, Sub, BitXor};
 
-#[derive(Debug,Clone,PartialEq,Copy)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub struct Vector3 {
     pub x: f64,
     pub y: f64,
@@ -90,33 +90,45 @@ impl BitXor<Vector3> for Vector3 {
 
 #[test]
 fn scalar_mul_vector() {
-    assert_eq!(Vector3::new(2.0, 4.0, 6.0),
-               2.0 * Vector3::new(1.0, 2.0, 3.0));
+    assert_eq!(
+        Vector3::new(2.0, 4.0, 6.0),
+        2.0 * Vector3::new(1.0, 2.0, 3.0)
+    );
 }
 #[test]
 fn vector_mul_scalar() {
-    assert_eq!(Vector3::new(2.0, 4.0, 6.0),
-               Vector3::new(1.0, 2.0, 3.0) * 2.0);
+    assert_eq!(
+        Vector3::new(2.0, 4.0, 6.0),
+        Vector3::new(1.0, 2.0, 3.0) * 2.0
+    );
 }
 #[test]
 fn cross() {
-    assert_eq!(Vector3::new(-4.0, 8.0, -4.0),
-               Vector3::new(1.0, 2.0, 3.0) * Vector3::new(3.0, 2.0, 1.0));
+    assert_eq!(
+        Vector3::new(-4.0, 8.0, -4.0),
+        Vector3::new(1.0, 2.0, 3.0) * Vector3::new(3.0, 2.0, 1.0)
+    );
 }
 #[test]
 fn add() {
-    assert_eq!(Vector3::new(4.0, 4.0, 4.0),
-               Vector3::new(1.0, 2.0, 3.0) + Vector3::new(3.0, 2.0, 1.0));
+    assert_eq!(
+        Vector3::new(4.0, 4.0, 4.0),
+        Vector3::new(1.0, 2.0, 3.0) + Vector3::new(3.0, 2.0, 1.0)
+    );
 }
 #[test]
 fn sub() {
-    assert_eq!(Vector3::new(-2.0, 0.0, 2.0),
-               Vector3::new(1.0, 2.0, 3.0) - Vector3::new(3.0, 2.0, 1.0));
+    assert_eq!(
+        Vector3::new(-2.0, 0.0, 2.0),
+        Vector3::new(1.0, 2.0, 3.0) - Vector3::new(3.0, 2.0, 1.0)
+    );
 }
 #[test]
 fn dot() {
-    assert_eq!(10.0,
-               Vector3::new(1.0, 2.0, 3.0) ^ Vector3::new(3.0, 2.0, 1.0));
+    assert_eq!(
+        10.0,
+        Vector3::new(1.0, 2.0, 3.0) ^ Vector3::new(3.0, 2.0, 1.0)
+    );
 }
 #[test]
 fn len() {
@@ -124,10 +136,16 @@ fn len() {
 }
 #[test]
 fn norm() {
-    assert_eq!(Vector3::new(2.0, 0.0, 0.0).norm(),
-               Vector3::new(1.0, 0.0, 0.0));
-    assert_eq!(Vector3::new(0.0, 30.0, 0.0).norm(),
-               Vector3::new(0.0, 1.0, 0.0));
-    assert_eq!(Vector3::new(0.0, 0.0, 64.0).norm(),
-               Vector3::new(0.0, 0.0, 1.0));
+    assert_eq!(
+        Vector3::new(2.0, 0.0, 0.0).norm(),
+        Vector3::new(1.0, 0.0, 0.0)
+    );
+    assert_eq!(
+        Vector3::new(0.0, 30.0, 0.0).norm(),
+        Vector3::new(0.0, 1.0, 0.0)
+    );
+    assert_eq!(
+        Vector3::new(0.0, 0.0, 64.0).norm(),
+        Vector3::new(0.0, 0.0, 1.0)
+    );
 }

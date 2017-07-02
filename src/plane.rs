@@ -31,10 +31,10 @@ impl<'a> Object for Plane<'a> {
         } else {
             let dist = ((self.norm ^ ray.start) + self.offset) / (-denom);
             Some(Intersection {
-                     object: self,
-                     ray,
-                     dist,
-                 })
+                object: self,
+                ray,
+                dist,
+            })
         }
     }
     fn surface(&self) -> &Surface {

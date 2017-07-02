@@ -1,7 +1,7 @@
 use std::f64;
 use std::ops::{Mul, Add, Sub};
 
-#[derive(Debug,Clone,PartialEq,Copy)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub struct Color {
     pub r: f64,
     pub g: f64,
@@ -116,13 +116,17 @@ fn scalar_mul() {
 }
 #[test]
 fn add() {
-    assert_eq!(Color::new(1.0, 2.0, 4.0),
-               Color::new(0.5, 1.0, 1.0) + Color::new(0.5, 1.0, 3.0));
+    assert_eq!(
+        Color::new(1.0, 2.0, 4.0),
+        Color::new(0.5, 1.0, 1.0) + Color::new(0.5, 1.0, 3.0)
+    );
 }
 #[test]
 fn sub() {
-    assert_eq!(Color::new(1.0, 2.0, 0.0),
-               Color::new(1.5, 3.0, 3.0) - Color::new(0.5, 1.0, 3.0));
+    assert_eq!(
+        Color::new(1.0, 2.0, 0.0),
+        Color::new(1.5, 3.0, 3.0) - Color::new(0.5, 1.0, 3.0)
+    );
 }
 #[test]
 fn clamp() {
@@ -131,11 +135,17 @@ fn clamp() {
 }
 #[test]
 fn to_pixel_color() {
-    assert_eq!(Color::new(1.0, 1.0, 1.0).to_pixel_color(),
-               Color::new(255.0, 255.0, 255.0));
-    assert_eq!(Color::new(1.6, 1.3, 1.1).to_pixel_color(),
-               Color::new(255.0, 255.0, 255.0));
-    assert_eq!(Color::new(0.5, 1.0, 0.0).to_pixel_color(),
-               Color::new(127.0, 255.0, 0.0));
+    assert_eq!(
+        Color::new(1.0, 1.0, 1.0).to_pixel_color(),
+        Color::new(255.0, 255.0, 255.0)
+    );
+    assert_eq!(
+        Color::new(1.6, 1.3, 1.1).to_pixel_color(),
+        Color::new(255.0, 255.0, 255.0)
+    );
+    assert_eq!(
+        Color::new(0.5, 1.0, 0.0).to_pixel_color(),
+        Color::new(127.0, 255.0, 0.0)
+    );
 
 }

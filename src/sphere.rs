@@ -38,10 +38,10 @@ impl<'a> Object for Sphere<'a> {
             None
         } else {
             Some(Intersection {
-                     object: self,
-                     ray,
-                     dist,
-                 })
+                object: self,
+                ray,
+                dist,
+            })
         }
     }
     fn surface(&self) -> &Surface {

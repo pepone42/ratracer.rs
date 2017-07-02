@@ -40,23 +40,26 @@ fn main() {
 
     let s = Scene {
         objects: vec![&plane, &sphere1, &sphere2],
-        lights: vec![Light::new(Vector3::new(-2.0, 2.5, 0.0), Color::new(0.49, 0.07, 0.07)),
-                     Light::new(Vector3::new(1.5, 2.5, 1.5), Color::new(0.07, 0.07, 0.49)),
-                     Light::new(Vector3::new(1.5, 2.5, -1.5), Color::new(0.07, 0.49, 0.071)),
-                     Light::new(Vector3::new(0.0, 3.5, 0.0), Color::new(0.21, 0.21, 0.35))],
+        lights: vec![
+            Light::new(Vector3::new(-2.0, 2.5, 0.0), Color::new(0.49, 0.07, 0.07)),
+            Light::new(Vector3::new(1.5, 2.5, 1.5), Color::new(0.07, 0.07, 0.49)),
+            Light::new(Vector3::new(1.5, 2.5, -1.5), Color::new(0.07, 0.49, 0.071)),
+            Light::new(Vector3::new(0.0, 3.5, 0.0), Color::new(0.21, 0.21, 0.35)),
+        ],
         camera: Camera::new(Vector3::new(3.0, 2.0, 4.0), Vector3::new(-1.0, 0.5, 0.0)),
     };
 
-    let mut window = Window::new("Raytrace - ESC to exit",
-                                 WIDTH,
-                                 HEIGHT,
-                                 WindowOptions::default())
-            .unwrap_or_else(|e| {
-                                panic!("{}", e);
-                            });
+    let mut window = Window::new(
+        "Raytrace - ESC to exit",
+        WIDTH,
+        HEIGHT,
+        WindowOptions::default(),
+    ).unwrap_or_else(|e| {
+        panic!("{}", e);
+    });
 
     let rt = Raytracer::new(s);
-    
+
     rt.render(&mut buffer, WIDTH as u32, HEIGHT as u32, 4);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
