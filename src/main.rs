@@ -47,7 +47,7 @@ fn main() {
         camera: Camera::new(Vector3::new(3.0, 2.0, 4.0), Vector3::new(-1.0, 0.5, 0.0)),
     };
 
-    let mut window = Window::new("Test - ESC to exit",
+    let mut window = Window::new("Raytrace - ESC to exit",
                                  WIDTH,
                                  HEIGHT,
                                  WindowOptions::default())
